@@ -40,7 +40,7 @@ public class UsersController: ControllerBase
         return CreatedAtAction(nameof(GetById), new { id = user.Id }, user);
     }
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(int id, AppUser user)
+    public async Task<IActionResult> Update(string id, AppUser user)
     {
         if (id != user.Id)
         {
@@ -78,7 +78,7 @@ public class UsersController: ControllerBase
         return NoContent();
     }
     
-    private bool UserExists(int id)
+    private bool UserExists(string id)
     {   
         return _context.Users.Any(e => e.Id == id);
     }
