@@ -1,14 +1,13 @@
 ﻿using api.Data;
 using api.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace api.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class MembersController(DataContext dataContext) : ControllerBase
+    public class MembersController(AppDbContext dataContext) : BaseApiController
     {
         [HttpGet]
         public async Task <ActionResult<IReadOnlyList<AppUser>>> GetMembers()
@@ -23,6 +22,8 @@ namespace api.Controllers
             await dataContext.SaveChangesAsync();
             return CreatedAtAction(nameof(GetMembers), new { id = member.Id }, member);
         }
+
+        [Authorize]
         [HttpGet("{id}")]
         public async Task<ActionResult<AppUser>> GetMemberById(string id)
         {
