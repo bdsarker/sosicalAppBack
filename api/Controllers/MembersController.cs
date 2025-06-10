@@ -1,5 +1,6 @@
 ﻿using api.Data;
 using api.Entities;
+using api.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -7,13 +8,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace api.Controllers
 {
-    public class MembersController(AppDbContext dataContext) : BaseApiController
+    [Authorize]
+    public class MembersController(AppDbContext dataContext, IMemberRepository memberRepository) : BaseApiController
     {
         [HttpGet]
-        public async Task <ActionResult<IReadOnlyList<AppUser>>> GetMembers()
+        public async Task <ActionResult<IReadOnlyList<Member>>> GetMembers()
         {
-            var members= await dataContext.Users.ToListAsync();
-            return members; 
+            return Ok(await memberRepository.GetMembersAsync());
         }
         [HttpPost]
         public async Task<ActionResult<AppUser>> CreateMember(AppUser member)
@@ -25,9 +26,9 @@ namespace api.Controllers
 
         [Authorize]
         [HttpGet("{id}")]
-        public async Task<ActionResult<AppUser>> GetMemberById(string id)
+        public async Task<ActionResult<Member>> GetMemberById(string id)
         {
-            var member = await dataContext.Users.FindAsync(id);
+            var member = await memberRepository.GetMemberByIdAsync(id);
             if (member == null)
             {
                 return NotFound();
@@ -75,6 +76,12 @@ namespace api.Controllers
         private bool MemberExists(string id)
         {
             throw new NotImplementedException();
+        }
+
+        [HttpGet("{id}/photos")]
+        public async Task<ActionResult<IReadOnlyList<Photo>>> GetMemberPhotos(string id)
+        {
+            return Ok(await memberRepository.GetPhotosForMemberAsync(id));
         }
     }
 }

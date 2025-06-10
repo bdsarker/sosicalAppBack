@@ -11,4 +11,6 @@ public class AppDbContext:DbContext
     }
 
     public DbSet<AppUser> Users { get; set; } = null!;
+    public DbSet<Member> Members { get; set; }
+    public DbSet<Photo> Photos { get; set; }
 }
